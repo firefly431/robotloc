@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Robot Visualizer</title>
+        <style type="text/css">
+/* BEGIN CSS */
+td {
+    padding: 0;
+    margin: 0;
+    width: 16px;
+    height: 16px;
+    overflow: hidden;
+    border: none;
+    position: relative;
+}
+tr, table {
+    padding: 0;
+    margin: 0;
+    border: none;
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin-bottom: 10px;
+}
+span {
+    display: block;
+    position: absolute;
+    left: 25%;
+    right: 25%;
+    top: 25%;
+    bottom: 25%;
+    border-radius: 8px;
+    background-color: blue;
+}
+/*   END CSS */
+        </style>
+    </head>
+    <body>
+        <script type="text/javascript">
+// BEGIN JAVASCRIPT
+var xhr = new XMLHttpRequest();
+
+function render(e) {
+    let container = document.createElement("div");
+    document.body.appendChild(container);
+    let json = JSON.parse(xhr.responseText);
+    let width = json["width"], height = json["height"];
+    let map = json["map"];
+    let data = json["data"];
+    for (let i = 0; i < data.length; i++) {
+        let cdiv = document.createElement("div");
+        let heading = document.createElement("h1");
+        heading.textContent = "Movement " + (i + 1);
+        let table = document.createElement("table");
+        container.appendChild(cdiv);
+        cdiv.appendChild(heading);
+        cdiv.appendChild(table);
+        let pos = data[i]["location"];
+        let probs = data[i]["probability"];
+        let sumprob = 0;
+        for (let row = 0; row < height; row++) {
+            let tbrow = document.createElement("tr");
+            table.appendChild(tbrow);
+            for (let col = 0; col < width; col++) {
+                let tbcel = document.createElement("td");
+                tbrow.appendChild(tbcel);
+                let color = "#ff0000";
+                if (!map[row * width + col]) {
+                    let grayvv = probs[row * width + col];
+                    let grayv = grayvv / 4294967296.0;
+                    sumprob += grayv;
+                    let gray = ((grayv * 255) & 0xFF) << 0;
+                    let hex = gray.toString(16);
+                    if (hex.length < 2) hex = "0" + hex;
+                    color = "#" + hex + hex + "00";
+                }
+                tbcel.style.backgroundColor = color;
+                if (pos[0] == col && pos[1] == row) {
+                    let dot = document.createElement("span");
+                    tbcel.appendChild(dot);
+                }
+            }
+        }
+    }
+}
+
+xhr.addEventListener("load", render);
+xhr.overrideMimeType("application/json");
+xhr.open("GET", "robot.json")
+xhr.send();
+//   END JAVASCRIPT
+        </script>
+    </body>
+</html>
