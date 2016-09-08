@@ -259,6 +259,17 @@ void dbg_print_observation(const observation &obs) {
     printf("dir: %s\n", dbg_dir_strings[(size_t)obs.direction]);
 }
 
+void write_observation(std::ofstream &out_json, const char *field_name, const observation &obs) {
+    out_json << "\"" << field_name << "\":{"
+        "\"sensor\":[";
+    for (size_t i = 0; i < NUM_DIRECTIONS; i++) {
+        if (i) out_json << ",";
+        out_json << obs.sensor[i];
+    }
+    out_json << "],\"direction\":" << (size_t) obs.direction;
+    out_json << "},";
+}
+
 int main(int argc, char **argv) {
     locator loc = {{0}};
     size_t nspaces = 0;
@@ -291,7 +302,9 @@ int main(int argc, char **argv) {
         out_json << "\"location\":[" << pt.p[0] << "," << pt.p[1] << "],";
         assert(!is_invalid(pt) && !is_wall(pt, map));
         observation obs = compute_observation(pt, map, move_dir);
+        write_observation(out_json, "obs_real", obs);
         perturb_observation(obs, &prng);
+        write_observation(out_json, "obs_observed", obs);
         dbg_print_observation(obs);
         loc = update_locator(loc, map, obs);
         size_t maxlocs[WIDTH * HEIGHT];
