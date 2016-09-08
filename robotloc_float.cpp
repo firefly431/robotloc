@@ -43,7 +43,7 @@ struct point {
 
 inline bool operator==(const point &a, const point &b) {
     return a.p[0] == b.p[0] && a.p[1] == b.p[1];
-} 
+}
 
 enum direction {
     EAST,
@@ -56,7 +56,7 @@ enum direction {
 const char *const dbg_dir_strings[4] = {"EAST", "NORTH", "WEST", "SOUTH"};
 
 struct observation {
-    bool sensor[NUM_DIRECTIONS]; // true if no wall 
+    bool sensor[NUM_DIRECTIONS]; // true if no wall
     direction direction;
 };
 

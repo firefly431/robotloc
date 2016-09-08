@@ -31,7 +31,7 @@ const char map[WIDTH * HEIGHT + 1] = \
 
 // stored as 32-bit fixed points
 const uint32_t DIR_NOISE_CHANCE    = 0x10000000;
-const uint32_t DIR_BACK_CHANCE     = 0x01000000; 
+const uint32_t DIR_BACK_CHANCE     = 0x01000000;
 const uint32_t SENSOR_NOISE_CHANCE = 0x20000000;
 
 // robot location via hidden markov models
@@ -42,7 +42,7 @@ struct point {
 
 inline bool operator==(const point &a, const point &b) {
     return a.p[0] == b.p[0] && a.p[1] == b.p[1];
-} 
+}
 
 enum direction {
     EAST,
@@ -55,7 +55,7 @@ enum direction {
 const char *const dbg_dir_strings[4] = {"EAST", "NORTH", "WEST", "SOUTH"};
 
 struct observation {
-    bool sensor[NUM_DIRECTIONS]; // true if no wall 
+    bool sensor[NUM_DIRECTIONS]; // true if no wall
     direction direction;
 };
 
