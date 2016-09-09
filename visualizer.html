@@ -43,28 +43,39 @@ span.leftarrow, span.rightarrow, span.uparrow, span.downarrow {
     height: 0;
     border-color: blue;
     border-style: solid;
+    border-width: 6px;
+}
+span.wrongdir {
+    border-color: red;
 }
 span.leftarrow, span.rightarrow {
-    border-top: 6px solid transparent;
-    border-bottom: 6px solid transparent;
+    border-top-color: transparent;
+    border-bottom-color: transparent;
+    border-left-style: none;
+    border-right-style: none;
     top: 2px;
 }
 span.uparrow, span.downarrow {
-    border-left: 6px solid transparent;
-    border-right: 6px solid transparent;
+    border-left-color: transparent;
+    border-right-color: transparent;
+    border-top-style: none;
+    border-bottom-style: none;
     left: 2px;
 }
 span.leftarrow {
-    border-right: 6px solid blue;
+    border-right-style: solid;
 }
 span.rightarrow {
-    border-left: 6px solid blue;
+    border-left-style: solid;
 }
 span.uparrow {
-    border-bottom: 6px solid blue;
+    border-bottom-style: solid;
 }
 span.downarrow {
-    border-top: 6px solid blue;
+    border-top-style: solid;
+}
+span.oldpos {
+    background-color: red;
 }
 /*   END CSS */
         </style>
@@ -94,6 +105,21 @@ function render(e) {
         let real = data[i]["obs_real"];
         let obs = data[i]["obs_observed"];
         let probs = data[i]["probability"];
+        let oldpos = [pos[0], pos[1]];
+        switch (real["direction"]) {
+        case 0: // east
+            oldpos[0]--;
+            break;
+        case 1: // north
+            oldpos[1]++;
+            break;
+        case 2: // west
+            oldpos[0]++;
+            break;
+        case 3: // south
+            oldpos[1]--;
+            break;
+        }
         let sumprob = 0;
         for (let row = 0; row < height; row++) {
             let tbrow = document.createElement("tr");
@@ -101,21 +127,31 @@ function render(e) {
             for (let col = 0; col < width; col++) {
                 let tbcel = document.createElement("td");
                 tbrow.appendChild(tbcel);
-                let color = "#ff0000";
+                let color = "#000000";
                 if (!map[row * width + col]) {
                     let grayvv = probs[row * width + col];
                     let grayv = grayvv / 4294967296.0;
                     sumprob += grayv;
-                    let gray = ((grayv * 255) & 0xFF) << 0;
+                    let gray = 256 - ((grayv * 255) & 0xFF) << 0;
+                    let gray2 = 128 + (gray >> 1);
+                    if (gray > 255) gray = 255;
                     let hex = gray.toString(16);
                     if (hex.length < 2) hex = "0" + hex;
-                    color = "#" + hex + hex + "00";
+                    let hex2 = gray2.toString(16);
+                    if (hex2.length < 2) hex2 = "0" + hex2;
+                    color = "#" + "ff" + hex2 + hex;
                 }
                 tbcel.style.backgroundColor = color;
                 if (pos[0] == col && pos[1] == row) {
                     let dot = document.createElement("span");
-                    dot.classList.add(directions[real["direction"]] + "arrow");
+                    dot.classList.add("circle");
                     tbcel.appendChild(dot);
+                }
+                if (oldpos[0] == col && oldpos[1] == row) {
+                    let olddot = document.createElement("span");
+                    olddot.classList.add(directions[obs["direction"]] + "arrow");
+                    if (obs["direction"] != real["direction"]) olddot.classList.add("wrongdir");
+                    tbcel.appendChild(olddot);
                 }
             }
         }
