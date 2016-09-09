@@ -73,6 +73,7 @@ point move_point(const point &point, direction direction) {
     case NUM_DIRECTIONS:
         return point;
     }
+    return point;
 }
 
 typedef unsigned short sample_map[WIDTH * HEIGHT];
@@ -229,7 +230,7 @@ locator update_locator(const locator &src_locator, const char *map, const observ
     double dir_probs[NUM_DIRECTIONS];
     for (point pt = {{0}}; pt.p[1] < HEIGHT; next_point(pt)) {
         if (is_wall(pt, map)) continue;
-        size_t num_prob;
+        size_t num_prob = 0; // number of possible directions to move (calculate probability of transition)
         for (int dir = 0; dir < NUM_DIRECTIONS; dir++) {
             point np = move_point(pt, (direction) dir);
             if (is_invalid(np) || is_wall(np, map)) {
@@ -296,7 +297,7 @@ int main(int argc, char **argv) {
         if (index) out_json << ",";
         direction move_dir = move_randomly(pt, map, &prng);
         out_json << "{";
-        std::printf("||> MOVEMENT %d: %s\n", index + 1, dbg_dir_strings[move_dir]);
+        std::printf("||> MOVEMENT %llu: %s\n", index + 1, dbg_dir_strings[move_dir]);
         // move around
         pt = move_point(pt, move_dir);
         out_json << "\"location\":[" << pt.p[0] << "," << pt.p[1] << "],";
@@ -327,7 +328,7 @@ int main(int argc, char **argv) {
         out_json << "]";
         // print summary
         std::printf("max probability: %.12f\n", maxprob);
-        std::printf("occurs in %d locations:\n", maxlocn);
+        std::printf("occurs in %llu locations:\n", maxlocn);
         bool correct = false;
         for (size_t i = 0; i < maxlocn; i++) {
             point p = from_index(maxlocs[i]);
@@ -337,7 +338,7 @@ int main(int argc, char **argv) {
         if (!correct) {
             std::printf("|||||> FAILURE!\n");
         }
-        std::printf("||> END OF MOVEMENT %d\n", index + 1);
+        std::printf("||> END OF MOVEMENT %llu\n", index + 1);
         out_json << "}";
     }
     out_json << "]}";

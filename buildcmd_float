@@ -1,2 +1,2 @@
 #!/bin/sh
-g++ -std=c++14 -Wuninitialized robotloc_float.cpp -o robotloc_float && ./robotloc_float >/dev/null
+g++ -std=c++14 -Wall robotloc_float.cpp -o robotloc_float && ./robotloc_float >/dev/null

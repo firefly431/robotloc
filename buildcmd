@@ -1,2 +1,2 @@
 #!/bin/sh
-g++ -std=c++14 -Wuninitialized robotloc.cpp -o robotloc && ./robotloc >/dev/null
+g++ -std=c++14 -Wall robotloc.cpp -o robotloc && ./robotloc >/dev/null
